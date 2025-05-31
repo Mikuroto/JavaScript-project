@@ -1,15 +1,15 @@
-function Hotel() {
-    this.rooms = [];
+class Hotel {
+    constructor() {
+        this.rooms = [];
+    }
+
+    addRoom(room) {
+        this.rooms.push(room);
+    }
+
+    getAvailableRooms() {
+        return this.rooms.filter(room => room.isAvailable);
+    }
 }
-
-Hotel.prototype.addRoom = function(room) {
-    this.rooms.push(room);
-};
-
-Hotel.prototype.getAvailableRooms = function() {
-    return this.rooms.filter(function(room) {
-        return room.isAvailable;
-    });
-};
 
 module.exports = Hotel;
