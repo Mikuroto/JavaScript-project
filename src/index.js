@@ -13,7 +13,6 @@ document.addEventListener('DOMContentLoaded', function() {
             storedRooms.forEach(roomData => {
                 let room;
                 if (roomData.premiumService) {
-                    // Ensure 'Free Spa' is used if premiumService was 'Free Breakfast' or similar old value
                     const service = roomData.premiumService === 'Free Breakfast' ? 'Free Spa' : roomData.premiumService;
                     room = new PremiumRoom(roomData.roomNumber, roomData.type, service);
                 } else {
@@ -23,12 +22,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 hotel.addRoom(room);
             });
         } else {
-            // Add default rooms if nothing in localStorage
             hotel.addRoom(new Room('101', 'single'));
             hotel.addRoom(new Room('102', 'double'));
-            hotel.addRoom(new PremiumRoom('103', 'suite', 'Free Spa')); // Updated default service
+            hotel.addRoom(new PremiumRoom('103', 'suite', 'Free Spa'));
             hotel.addRoom(new Room('201', 'single'));
-            saveRooms(); // Save default rooms to localStorage
+            saveRooms();
         }
     };
 
@@ -37,5 +35,5 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     loadRooms();
-    ui.init(hotel, saveRooms); // Pass saveRooms to UI to call after booking/canceling
+    ui.init(hotel, saveRooms);
 });
