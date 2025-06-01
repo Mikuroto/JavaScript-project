@@ -5,6 +5,13 @@ class PremiumRoom extends Room {
         super(roomNumber, type);
         this.premiumService = premiumService;
     }
+
+    toJSON() {
+        return {
+            ...super.toJSON(),
+            premiumService: this.premiumService
+        };
+    }
 }
 
 module.exports = PremiumRoom;
