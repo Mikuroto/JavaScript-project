@@ -66,7 +66,6 @@ class UI {
         const bookingButton = document.createElement('button');
         bookingButton.dataset.roomNumber = room.roomNumber;
         this._configureButton(bookingButton, room.isAvailable); 
-        // Disable booking/cancel based on authentication and ownership
         if (!currentUser) {
             bookingButton.disabled = true;
         } else if (!room.isAvailable && room.bookedBy !== currentUser.username) {
