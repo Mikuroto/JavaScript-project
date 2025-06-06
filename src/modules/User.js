@@ -23,6 +23,4 @@ class User {
             password: this.#password 
         };
     }
-}
-
-module.exports = User;
+}export default User;

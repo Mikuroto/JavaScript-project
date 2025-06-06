@@ -13,4 +13,4 @@ class HotelAPI {
     }
 }
 
-module.exports = HotelAPI;
+export default HotelAPI;

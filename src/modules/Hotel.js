@@ -8,4 +8,4 @@ class Hotel {
     }
 }
 
-module.exports = Hotel;
+export default Hotel;

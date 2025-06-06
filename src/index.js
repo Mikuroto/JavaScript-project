@@ -1,14 +1,24 @@
 import './style.scss';
-const Hotel = require('./modules/Hotel');
-const Room = require('./modules/Room');
-const PremiumRoom = require('./modules/PremiumRoom');
-const UI = require('./modules/UI');
-const UserManager = require('./modules/UserManager');
+import Hotel from './modules/Hotel.js';
+import Room from './modules/Room.js';
+import PremiumRoom from './modules/PremiumRoom.js';
+import UI from './services/UI.js';
+import UserManager from './services/UserManager.js';
 
 document.addEventListener('DOMContentLoaded', function() {
     const hotel = new Hotel();
     const ui = new UI();
     const userManager = new UserManager();
+
+    const savedUser = sessionStorage.getItem('loggedInUser');
+    if (savedUser) {
+        try {
+            const { username, password } = JSON.parse(savedUser);
+            userManager.login(username, password);
+        } catch {
+            sessionStorage.removeItem('loggedInUser');
+        }
+    }
 
     const updateAuthUI = () => {
         const authStatus = document.getElementById('authStatus');
@@ -74,6 +84,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const password = document.getElementById('password').value;
         try {
             userManager.register(username, password);
+            sessionStorage.setItem('loggedInUser', JSON.stringify(userManager.currentUser));
             updateAuthUI();
             ui.renderRooms(hotel.rooms, userManager.currentUser);
         } catch (error) {
@@ -86,6 +97,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const password = document.getElementById('password').value;
         try {
             userManager.login(username, password);
+            sessionStorage.setItem('loggedInUser', JSON.stringify(userManager.currentUser));
             updateAuthUI();
             ui.renderRooms(hotel.rooms, userManager.currentUser);
         } catch (error) {
@@ -95,6 +107,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const handleLogout = () => {
         userManager.logout();
+        sessionStorage.removeItem('loggedInUser');
         updateAuthUI();
         ui.renderRooms(hotel.rooms, userManager.currentUser);
     };

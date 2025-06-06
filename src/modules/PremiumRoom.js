@@ -1,4 +1,4 @@
-const Room = require('./Room');
+import Room from './Room.js';
 
 class PremiumRoom extends Room {
     constructor(roomNumber, type, premiumService = "Free Spa") {
@@ -14,4 +14,4 @@ class PremiumRoom extends Room {
     }
 }
 
-module.exports = PremiumRoom;
+export default PremiumRoom;

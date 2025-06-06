@@ -1,4 +1,4 @@
-const User = require('./User');
+import User from '../modules/User.js';
 
 class UserManager {
     constructor() {
@@ -47,4 +47,4 @@ class UserManager {
     }
 }
 
-module.exports = UserManager;
+export default UserManager;

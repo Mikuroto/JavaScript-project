@@ -1,3 +1,5 @@
+import HotelAPI from './HotelAPI.js';
+
 class UI {
     constructor() {
         this.saveRoomsCallback = null;
@@ -19,7 +21,7 @@ class UI {
         }
     }
 
-    _createRoomCardElement(room) {
+    _createRoomCardElement(room, currentUser) {
         const roomCard = document.createElement('div');
         roomCard.classList.add('room-card');
         if (room.premiumService) {
@@ -64,6 +66,12 @@ class UI {
         const bookingButton = document.createElement('button');
         bookingButton.dataset.roomNumber = room.roomNumber;
         this._configureButton(bookingButton, room.isAvailable); 
+        // Disable booking/cancel based on authentication and ownership
+        if (!currentUser) {
+            bookingButton.disabled = true;
+        } else if (!room.isAvailable && room.bookedBy !== currentUser.username) {
+            bookingButton.disabled = true;
+        }
         roomCard.appendChild(bookingButton);
 
         const reviewsButton = document.createElement('button');
@@ -84,7 +92,7 @@ class UI {
         const roomsContainer = document.getElementById('rooms-container');
         roomsContainer.innerHTML = '';
         rooms.forEach(room => {
-            const roomCardElement = this._createRoomCardElement(room);
+            const roomCardElement = this._createRoomCardElement(room, currentUser);
             roomsContainer.appendChild(roomCardElement);
         });
     }
@@ -134,8 +142,7 @@ class UI {
         reviewsButton.disabled = true;
 
         try {
-            const HotelAPI = require('./HotelAPI'); 
-            const reviews = await HotelAPI.fetchReviews(); 
+            const reviews = await HotelAPI.fetchReviews();
             reviewsSection.innerHTML = '';
 
             if (reviews && reviews.length > 0) {
@@ -158,7 +165,7 @@ class UI {
     }
 
     init(hotel, saveRoomsCallback, userManager) {
-        this.saveRoomsCallback = saveRoomsCallback; 
+        this.saveRoomsCallback = saveRoomsCallback;
         this.userManager = userManager;
         this.renderRooms(hotel.rooms, this.userManager.currentUser);
 
@@ -208,4 +215,4 @@ class UI {
     }
 }
 
-module.exports = UI;
+export default UI;
