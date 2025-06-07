@@ -1,0 +1,22 @@
+{
+  "reviews": [
+    {
+      "id": "5825IkbCUMyJeuC-FsNkK",
+      "roomNumber": 102,
+      "email": "test@gmail.com",
+      "body": "test review of room 102"
+    },
+    {
+      "id": "twzmNRGuQ-EEAed_l52y1",
+      "roomNumber": 102,
+      "email": "test2@gmail.com",
+      "body": "second review"
+    },
+    {
+      "id": "jkqfSvxqOKWSnrS4VS8Ng",
+      "roomNumber": 201,
+      "email": "adfa@gmail.com",
+      "body": "bad"
+    }
+  ]
+}
