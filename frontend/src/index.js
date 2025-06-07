@@ -117,20 +117,33 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('logoutButton').addEventListener('click', handleLogout);
 
     globalThis.addReview = async function () {
-        const email = document.getElementById("reviewEmail").value.trim();
-        const roomNumber = parseInt(document.getElementById("reviewRoom").value.trim());
-        const body = document.getElementById("reviewBody").value.trim();
-        const response = await fetch('http://localhost:3000/reviews', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ roomNumber, email, body })
-        });
-        if (response.ok) {
+        const email = document.getElementById('reviewEmail').value.trim();
+        const roomNumberStr = document.getElementById('reviewRoom').value.trim();
+        const body = document.getElementById('reviewBody').value.trim();
+        const roomNumber = parseInt(roomNumberStr, 10);
+        if (!email || !body || isNaN(roomNumber)) {
+            alert('Invalid input');
+            return;
+        }
+        try {
+            const response = await fetch('http://localhost:3000/reviews', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ roomNumber, email, body })
+            });
+            if (!response.ok) {
+                alert('Failed to add review.');
+                return;
+            }
             alert('Review added!');
-            const loadBtn = document.querySelector(`button.reviews-button[data-room-number="${roomNumber}"]`);
-            if (loadBtn) await new UI()._handleLoadReviews(roomNumber, loadBtn);
-        } else {
-            alert('Failed to add review.');
+            const loadBtn = document.querySelector(
+                `button.reviews-button[data-room-number="${roomNumber}"]`
+            );
+            if (loadBtn) {
+                await ui._handleLoadReviews(String(roomNumber), loadBtn);
+            }
+        } catch (error) {
+            alert('Error adding review.');
         }
     };
 
