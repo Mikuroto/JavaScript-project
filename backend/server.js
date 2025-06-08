@@ -14,17 +14,14 @@ app.use(bodyParser.json());
 const adapter = new JSONFile('db.json');
 const db = new Low(adapter, { reviews: [] });
 
-// Initialize database file if not exists
 await db.read();
 await db.write();
 
-// GET all reviews
 app.get('/reviews', async (req, res) => {
   await db.read();
   res.json(db.data.reviews);
 });
 
-// POST a new review
 app.post('/reviews', async (req, res) => {
   const { roomNumber, email, body } = req.body;
   const newReview = { id: nanoid(), roomNumber, email, body };
@@ -32,6 +29,21 @@ app.post('/reviews', async (req, res) => {
   db.data.reviews.push(newReview);
   await db.write();
   res.json({ message: 'Review added.', review: newReview });
+});
+
+app.put('/reviews/:id', async (req, res) => {
+    const { id } = req.params;
+     const { roomNumber, email, body } = req.body;
+     await db.read();
+     const review = db.data.reviews.find(r => r.id === id);
+     if (!review) {
+       return res.status(404).json({ message: 'Review not found.' });
+     }
+     review.roomNumber = roomNumber;
+     review.email = email;
+     review.body = body;
+     await db.write();
+     res.json({ message: 'Review updated.', review });
 });
 
 app.listen(PORT, () => {

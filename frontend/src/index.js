@@ -147,6 +147,40 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
+    globalThis.editReview = async function(id, currentRoomNumber) {
+        const email = prompt('Enter new email:').trim();
+        const roomNumberStr = prompt('Enter new room number:').trim();
+        const body = prompt('Enter new review text:').trim();
+        const roomNumber = parseInt(roomNumberStr, 10);
+        if (!email || !body || isNaN(roomNumber)) {
+            alert('Invalid input');
+            return;
+        }
+        try {
+            const response = await fetch(`http://localhost:3000/reviews/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ roomNumber, email, body })
+            });
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => null);
+                console.error('Update failed:', response.status, errorData);
+                alert('Failed to update review: ' + (errorData?.message || response.status));
+                return;
+            }
+            alert('Review updated!');
+            const loadBtn = document.querySelector(
+                `button.reviews-button[data-room-number="${currentRoomNumber}"]`
+            );
+            if (loadBtn) {
+                await ui._handleLoadReviews(String(currentRoomNumber), loadBtn);
+            }
+        } catch (error) {
+            console.error('Error in editReview:', error);
+            alert('Error updating review.');
+        }
+    };
+
     loadRooms();
     updateAuthUI(); 
     ui.init(hotel, saveRooms, userManager);

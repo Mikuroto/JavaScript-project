@@ -143,7 +143,6 @@ class UI {
          try {
             const reviews = await HotelAPI.fetchReviews();
             reviewsSection.innerHTML = '';
-            // filter reviews for this room
             const roomReviews = reviews.filter(r => r.roomNumber == roomNumber);
             const randomReviews = roomReviews.sort(() => 0.5 - Math.random()).slice(0, 3);
 
@@ -152,6 +151,10 @@ class UI {
                     const reviewElement = document.createElement('p');
                     reviewElement.textContent = `${review.email}: ${review.body}`;
                     reviewsSection.appendChild(reviewElement);
+                    const editBtn = document.createElement('button');
+                    editBtn.textContent = 'Edit';
+                    editBtn.addEventListener('click', () => editReview(review.id, parseInt(roomNumber, 10)));
+                    reviewsSection.appendChild(editBtn);
                 });
             } else {
                 reviewsSection.textContent = 'No reviews for this room.';
