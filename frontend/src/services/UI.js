@@ -21,7 +21,7 @@ class UI {
         }
     }
 
-    _createRoomCardElement(room, currentUser) {
+    _createRoomCardElement(room, currentUser, reviews = []) {
         const roomCard = document.createElement('div');
         roomCard.classList.add('room-card');
         if (room.premiumService) {
@@ -63,6 +63,13 @@ class UI {
         
         roomCard.appendChild(roomInfoDiv);
 
+        // add review count summary
+        const count = reviews.filter(r => r.roomNumber == room.roomNumber).length;
+        const countP = document.createElement('p');
+        countP.classList.add('review-count');
+        countP.textContent = count === 0 ? 'No reviews yet' : `${count} reviews`;
+        roomInfoDiv.appendChild(countP);
+
         const bookingButton = document.createElement('button');
         bookingButton.dataset.roomNumber = room.roomNumber;
         this._configureButton(bookingButton, room.isAvailable); 
@@ -87,11 +94,11 @@ class UI {
         return roomCard;
     }
 
-    renderRooms(rooms, currentUser) { 
+    renderRooms(rooms, currentUser, reviews = []) { 
         const roomsContainer = document.getElementById('rooms-container');
         roomsContainer.innerHTML = '';
         rooms.forEach(room => {
-            const roomCardElement = this._createRoomCardElement(room, currentUser);
+            const roomCardElement = this._createRoomCardElement(room, currentUser, reviews);
             roomsContainer.appendChild(roomCardElement);
         });
     }
@@ -155,6 +162,10 @@ class UI {
                     editBtn.textContent = 'Edit';
                     editBtn.addEventListener('click', () => editReview(review.id, parseInt(roomNumber, 10)));
                     reviewsSection.appendChild(editBtn);
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.textContent = 'Delete';
+                    deleteBtn.addEventListener('click', () => deleteReview(review.id, parseInt(roomNumber, 10)));
+                    reviewsSection.appendChild(deleteBtn);
                 });
             } else {
                 reviewsSection.textContent = 'No reviews for this room.';

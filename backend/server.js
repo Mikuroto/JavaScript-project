@@ -46,6 +46,19 @@ app.put('/reviews/:id', async (req, res) => {
      res.json({ message: 'Review updated.', review });
 });
 
+// DELETE remove a review by id
+app.delete('/reviews/:id', async (req, res) => {
+  const { id } = req.params;
+  await db.read();
+  const idx = db.data.reviews.findIndex(r => r.id === id);
+  if (idx === -1) {
+    return res.status(404).json({ message: 'Review not found.' });
+  }
+  db.data.reviews.splice(idx, 1);
+  await db.write();
+  res.json({ message: 'Review deleted.' });
+});
+
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
 });

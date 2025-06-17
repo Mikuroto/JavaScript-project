@@ -5,7 +5,7 @@ import PremiumRoom from './modules/PremiumRoom.js';
 import UI from './services/UI.js';
 import UserManager from './services/UserManager.js';
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
     const hotel = new Hotel();
     const ui = new UI();
     const userManager = new UserManager();
@@ -147,7 +147,18 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
-    globalThis.editReview = async function(id, currentRoomNumber) {
+    // Load all reviews and render rooms with review counts
+    const loadReviewsWithRooms = async () => {
+        try {
+            const res = await fetch('http://localhost:3000/reviews');
+            const reviews = res.ok ? await res.json() : [];
+            ui.renderRooms(hotel.rooms, userManager.currentUser, reviews);
+        } catch (err) {
+            console.error('Error loading reviews for rooms:', err);
+        }
+    };
+
+    globalThis.editReview = async function(id) {
         const email = prompt('Enter new email:').trim();
         const roomNumberStr = prompt('Enter new room number:').trim();
         const body = prompt('Enter new review text:').trim();
@@ -169,19 +180,32 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             alert('Review updated!');
-            const loadBtn = document.querySelector(
-                `button.reviews-button[data-room-number="${currentRoomNumber}"]`
-            );
-            if (loadBtn) {
-                await ui._handleLoadReviews(String(currentRoomNumber), loadBtn);
-            }
+            await loadReviewsWithRooms();
         } catch (error) {
-            console.error('Error in editReview:', error);
+            console.error('Error updating review:', error);
             alert('Error updating review.');
+        }
+    };
+
+    globalThis.deleteReview = async function(id) {
+        const confirmed = confirm('Are you sure?');
+        if (!confirmed) return;
+        try {
+            const response = await fetch(`http://localhost:3000/reviews/${id}`, { method: 'DELETE' });
+            if (!response.ok) {
+                alert('Failed to delete review.');
+                return;
+            }
+            alert('Review deleted!');
+            await loadReviewsWithRooms();
+        } catch (error) {
+            console.error('Error deleting review:', error);
+            alert('Error deleting review.');
         }
     };
 
     loadRooms();
     updateAuthUI(); 
     ui.init(hotel, saveRooms, userManager);
+    await loadReviewsWithRooms();
 });
