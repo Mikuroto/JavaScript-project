@@ -11,7 +11,10 @@ class UserManager {
         });
         const data = await response.json();
         if (!response.ok) throw new Error(data.message || 'Signup failed');
-        this.currentUser = { username: data.username };
+                // Save token and set currentUser based on token payload
+        sessionStorage.setItem('token', data.token);
+        const payload = JSON.parse(atob(data.token.split('.')[1]));
+        this.currentUser = { username: payload.username };
         return this.currentUser;
     }
 
@@ -23,7 +26,9 @@ class UserManager {
         });
         const data = await response.json();
         if (!response.ok) throw new Error(data.message || 'Login failed');
-        this.currentUser = { username: data.username };
+        sessionStorage.setItem('token', data.token);
+        const payload = JSON.parse(atob(data.token.split('.')[1]));
+        this.currentUser = { username: payload.username };
         return this.currentUser;
     }
 

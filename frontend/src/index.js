@@ -11,13 +11,13 @@ document.addEventListener('DOMContentLoaded', async function() {
      const userManager = new UserManager();
 
     // Restore session (only username stored)
-    const savedUser = sessionStorage.getItem('loggedInUser');
-    if (savedUser && savedUser !== 'null') {
+    const token = sessionStorage.getItem('token');
+    if (token) {
         try {
-            const { username } = JSON.parse(savedUser);
-            userManager.currentUser = { username };
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            userManager.currentUser = { username: payload.username };
         } catch {
-            sessionStorage.removeItem('loggedInUser');
+            sessionStorage.removeItem('token');
         }
     }
 
@@ -81,37 +81,35 @@ document.addEventListener('DOMContentLoaded', async function() {
     };
 
     const handleRegister = async () => {
-        const username = document.getElementById('username').value;
-        const password = document.getElementById('password').value;
-        try {
+         const username = document.getElementById('username').value;
+         const password = document.getElementById('password').value;
+         try {
             await userManager.register(username, password);
-            sessionStorage.setItem('loggedInUser', JSON.stringify(userManager.currentUser));
-            updateAuthUI();
-            await loadReviewsWithRooms();
-        } catch (error) {
-            alert(error.message);
-        }
-    };
+             updateAuthUI();
+             await loadReviewsWithRooms();
+         } catch (error) {
+             alert(error.message);
+         }
+     };
 
     const handleLogin = async () => {
-        const username = document.getElementById('username').value;
-        const password = document.getElementById('password').value;
-        try {
+         const username = document.getElementById('username').value;
+         const password = document.getElementById('password').value;
+         try {
             await userManager.login(username, password);
-            sessionStorage.setItem('loggedInUser', JSON.stringify(userManager.currentUser));
-            updateAuthUI();
-            await loadReviewsWithRooms();
-        } catch (error) {
-            alert(error.message);
-        }
-    };
+             updateAuthUI();
+             await loadReviewsWithRooms();
+         } catch (error) {
+             alert(error.message);
+         }
+     };
 
     const handleLogout = async () => {
-        userManager.logout();
-        sessionStorage.removeItem('loggedInUser');
-        updateAuthUI();
-        await loadReviewsWithRooms();
-    };
+         userManager.logout();
+         sessionStorage.removeItem('token');
+         updateAuthUI();
+         await loadReviewsWithRooms();
+     };
 
     document.getElementById('registerButton').addEventListener('click', handleRegister);
     document.getElementById('loginButton').addEventListener('click', handleLogin);
@@ -129,7 +127,10 @@ document.addEventListener('DOMContentLoaded', async function() {
         try {
             const response = await fetch('http://localhost:3000/reviews', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${sessionStorage.getItem('token')}`
+                },
                 body: JSON.stringify({ roomNumber, email, body })
             });
             if (!response.ok) {
@@ -171,7 +172,10 @@ document.addEventListener('DOMContentLoaded', async function() {
         try {
             const response = await fetch(`http://localhost:3000/reviews/${id}`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${sessionStorage.getItem('token')}`
+                },
                 body: JSON.stringify({ roomNumber, email, body })
             });
             if (!response.ok) {
@@ -188,21 +192,23 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
     };
 
-    globalThis.deleteReview = async function(id) {
+    globalThis.deleteReview = async function(id, roomNumber) {
         const confirmed = confirm('Are you sure?');
         if (!confirmed) return;
         try {
-            const response = await fetch(`http://localhost:3000/reviews/${id}`, { method: 'DELETE' });
-            if (!response.ok) {
-                alert('Failed to delete review.');
-                return;
-            }
-            alert('Review deleted!');
+            const response = await fetch(`http://localhost:3000/reviews/${id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${sessionStorage.getItem('token')}` }
+            });
+             if (!response.ok) {
+                 alert('Failed to delete review.');
+                 return;
+             }
+             alert('Review deleted!');
             await loadReviewsWithRooms();
-        } catch (error) {
-            console.error('Error deleting review:', error);
-            alert('Error deleting review.');
-        }
+         } catch (error) {
+             alert('Error deleting review.');
+         }
     };
 
     loadRooms();
