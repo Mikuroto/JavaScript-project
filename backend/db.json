@@ -7,18 +7,6 @@
       "body": "test review of room 102"
     },
     {
-      "id": "jkqfSvxqOKWSnrS4VS8Ng",
-      "roomNumber": 201,
-      "email": "adfa@gmail.com",
-      "body": "bad"
-    },
-    {
-      "id": "X02c-mP-RnvearoU8WVL_",
-      "roomNumber": 102,
-      "email": "aaa@gmail.com",
-      "body": "review test"
-    },
-    {
       "id": "_KCrcOnsOT4ZU6xnzV8GG",
       "roomNumber": 201,
       "email": "cc@gmail.com",
@@ -35,6 +23,44 @@
       "roomNumber": 101,
       "email": "fff@gmail.com",
       "body": "11"
+    }
+  ],
+  "users": [
+    {
+      "username": "adfasdf",
+      "password": "$2b$10$ptJKIAjAiKP2AP/cYC4pA.c3q3UCV8orEoi/7KL4c/0htsm6Xwz92"
+    },
+    {
+      "username": "adsfasdfasd",
+      "password": "$2b$10$yPLujZfCfIgBcYeegd91.uAbMVcAItYRc04cVK8TcEpG2MJGQELo6"
+    },
+    {
+      "username": "aaa",
+      "password": "$2b$10$6k8GmFuVIxct8OGSnmsuh.oQk3.uRQSwXBK5ydg35e7z.tJDd6hOe"
+    },
+    {
+      "username": "bbb",
+      "password": "$2b$10$HuIN4vJdviGhJYMiw7GQSu4PzZXrxDqkeD4pB2n3gR0mv1PYH84Xq"
+    },
+    {
+      "username": "kkkk",
+      "password": "$2b$10$ubmkBy0KQJF2vmQe2.Sw0.8LrZxY8Vv/XAP1A2ORQTuXBdgZNrXLO"
+    },
+    {
+      "username": "adsfads",
+      "password": "$2b$10$oOGqPAzamGUON8RNyyXJ..IUzlfvS5m6RaOLjAXnXs0UcAZftW63m"
+    },
+    {
+      "username": "adfads",
+      "password": "$2b$10$XgT82FZ7i77wXrxfF5HQHuU/bcJgFNhzoVit3fRN.wIidnsHfXf3."
+    },
+    {
+      "username": "nnn",
+      "password": "$2b$10$lF3uvfoBp1/cil7nNQ3mGOjY89xzZQZG1wMF95aVPpcnzZJin033y"
+    },
+    {
+      "username": "adfasdfasdf",
+      "password": "$2b$10$GxyMjZ7DrziWZq/jPz/48ewHHh3/JAT/1Y.ICO14stWbsNbGuyeUW"
     }
   ]
 }

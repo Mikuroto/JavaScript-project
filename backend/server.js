@@ -4,6 +4,7 @@ import bodyParser from 'body-parser';
 import { Low } from 'lowdb';
 import { JSONFile } from 'lowdb/node';
 import { nanoid } from 'nanoid';
+import bcrypt from 'bcryptjs';
 
 const app = express();
 const PORT = 3000;
@@ -12,7 +13,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 const adapter = new JSONFile('db.json');
-const db = new Low(adapter, { reviews: [] });
+const db = new Low(adapter, { reviews: [], users: [] });
 
 await db.read();
 await db.write();
@@ -57,6 +58,32 @@ app.delete('/reviews/:id', async (req, res) => {
   db.data.reviews.splice(idx, 1);
   await db.write();
   res.json({ message: 'Review deleted.' });
+});
+
+// User signup with password hashing
+app.post('/signup', async (req, res) => {
+  const { username, password } = req.body;
+  await db.read();
+  const exists = db.data.users.find(u => u.username === username);
+  if (exists) {
+    return res.status(400).json({ message: 'User already exists.' });
+  }
+  const hash = bcrypt.hashSync(password, 10);
+  const user = { username, password: hash };
+  db.data.users.push(user);
+  await db.write();
+  res.json({ message: 'User created.', username });
+});
+
+// User login with password verification
+app.post('/login', async (req, res) => {
+  const { username, password } = req.body;
+  await db.read();
+  const user = db.data.users.find(u => u.username === username);
+  if (!user || !bcrypt.compareSync(password, user.password)) {
+    return res.status(401).json({ message: 'Invalid credentials.' });
+  }
+  res.json({ message: 'Login successful.', username });
 });
 
 app.listen(PORT, () => {

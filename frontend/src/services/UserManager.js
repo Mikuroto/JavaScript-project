@@ -1,49 +1,34 @@
-import User from '../modules/User.js';
-
 class UserManager {
     constructor() {
-        this.users = this.loadUsers();
         this.currentUser = null;
     }
 
-    register(username, password) {
-        if (this.users.find(user => user.username === username)) {
-            throw new Error('User already exists.');
-        }
-        const user = new User(username, password);
-        this.users.push(user);
-        this.saveUsers();
-        this.currentUser = user;
-        return user;
+    async register(username, password) {
+        const response = await fetch('http://localhost:3000/signup', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.message || 'Signup failed');
+        this.currentUser = { username: data.username };
+        return this.currentUser;
     }
 
-    login(username, password) {
-        const user = this.users.find(user => user.username === username);
-        if (user && user.validatePassword(password)) {
-            this.currentUser = user;
-            return user;
-        }
-        throw new Error('Invalid username or password.');
+    async login(username, password) {
+        const response = await fetch('http://localhost:3000/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.message || 'Login failed');
+        this.currentUser = { username: data.username };
+        return this.currentUser;
     }
 
     logout() {
         this.currentUser = null;
-    }
-
-    saveUsers() {
-        localStorage.setItem('users', JSON.stringify(this.users.map(user => user.toJSON())));
-    }
-
-    loadUsers() {
-        const usersData = localStorage.getItem('users');
-        if (usersData) {
-            return JSON.parse(usersData).map(userData => {
-                const user = new User(userData.username, '123456'); 
-                user.setPassword(userData.password); 
-                return user;
-            });
-        }
-        return [];
     }
 }
 

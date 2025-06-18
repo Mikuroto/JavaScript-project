@@ -6,15 +6,16 @@ import UI from './services/UI.js';
 import UserManager from './services/UserManager.js';
 
 document.addEventListener('DOMContentLoaded', async function() {
-    const hotel = new Hotel();
-    const ui = new UI();
-    const userManager = new UserManager();
+     const hotel = new Hotel();
+     const ui = new UI();
+     const userManager = new UserManager();
 
+    // Restore session (only username stored)
     const savedUser = sessionStorage.getItem('loggedInUser');
-    if (savedUser) {
+    if (savedUser && savedUser !== 'null') {
         try {
-            const { username, password } = JSON.parse(savedUser);
-            userManager.login(username, password);
+            const { username } = JSON.parse(savedUser);
+            userManager.currentUser = { username };
         } catch {
             sessionStorage.removeItem('loggedInUser');
         }
@@ -79,37 +80,37 @@ document.addEventListener('DOMContentLoaded', async function() {
         localStorage.setItem('hotelRooms', JSON.stringify(hotel.rooms.map(room => room.toJSON())));
     };
 
-    const handleRegister = () => {
+    const handleRegister = async () => {
         const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
         try {
-            userManager.register(username, password);
+            await userManager.register(username, password);
             sessionStorage.setItem('loggedInUser', JSON.stringify(userManager.currentUser));
             updateAuthUI();
-            ui.renderRooms(hotel.rooms, userManager.currentUser);
+            await loadReviewsWithRooms();
         } catch (error) {
             alert(error.message);
         }
     };
 
-    const handleLogin = () => {
+    const handleLogin = async () => {
         const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
         try {
-            userManager.login(username, password);
+            await userManager.login(username, password);
             sessionStorage.setItem('loggedInUser', JSON.stringify(userManager.currentUser));
             updateAuthUI();
-            ui.renderRooms(hotel.rooms, userManager.currentUser);
+            await loadReviewsWithRooms();
         } catch (error) {
             alert(error.message);
         }
     };
 
-    const handleLogout = () => {
+    const handleLogout = async () => {
         userManager.logout();
         sessionStorage.removeItem('loggedInUser');
         updateAuthUI();
-        ui.renderRooms(hotel.rooms, userManager.currentUser);
+        await loadReviewsWithRooms();
     };
 
     document.getElementById('registerButton').addEventListener('click', handleRegister);
